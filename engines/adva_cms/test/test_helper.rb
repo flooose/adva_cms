@@ -32,6 +32,15 @@ class ActiveSupport::TestCase
   teardown :clear_cache_dir!
   teardown :rollback_multi_site_mode!
   
+  setup do
+    @default_permissions = Rbac::Context.default_permissions.dup
+  end
+
+  teardown do
+    Rbac::Context.default_permissions = @default_permissions
+  end
+  
+  
   def set_locale!
     I18n.locale = nil
     I18n.default_locale = :en

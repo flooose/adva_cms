@@ -188,11 +188,11 @@ class AdminArticlesControllerTest < ActionController::TestCase
       with :access_granted do
         it_assigns :site, :section, :article
         it_renders :template, :edit
-      end
 
-      has_form_putting_to admin_article_path do
-        shows :form
-        # assert that the taglist field works when taglist contains double quotes
+        has_form_putting_to admin_article_path do
+          shows :form
+          # assert that the taglist field works when taglist contains double quotes
+        end
       end
     end
   end
@@ -210,11 +210,11 @@ class AdminArticlesControllerTest < ActionController::TestCase
       with :access_granted do
         it_assigns :site, :section, :article
         it_renders :template, :edit
-      end
-      
-      has_form_putting_to admin_article_path do
-        shows :form
-        # assert that the taglist field works when taglist contains double quotes
+
+        has_form_putting_to admin_article_path do
+          shows :form
+          # assert that the taglist field works when taglist contains double quotes
+        end
       end
     end
   end

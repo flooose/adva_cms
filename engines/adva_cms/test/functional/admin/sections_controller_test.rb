@@ -42,7 +42,7 @@ class AdminSectionsControllerTest < ActionController::TestCase
   describe "GET to :index" do
     action { get :index, default_params }
     
-    it_guards_permissions :show, :sections
+    it_guards_permissions :show, :section
     
     with :access_granted do
       it_assigns :site, :sections

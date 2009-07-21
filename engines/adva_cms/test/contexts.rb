@@ -60,6 +60,7 @@ class Test::Unit::TestCase
     before do
       stub(@controller).require_authentication
       stub(@controller).guard_permission
+      stub(@controller).has_permission? { true }
     end
   end
 
