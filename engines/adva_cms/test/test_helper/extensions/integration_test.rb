@@ -52,7 +52,7 @@ module ActionController
       raise "need to set the current site before loggin in" unless @integration_session
       post "/session", :user => {:email => 'an-admin@example.com', :password => 'a password'}
       assert controller.authenticated?
-      assert controller.current_user.has_role?(:admin, :context => controller.site)
+      assert controller.current_user.has_role?(:admin, controller.site)
     end
     
     def login_as_superuser

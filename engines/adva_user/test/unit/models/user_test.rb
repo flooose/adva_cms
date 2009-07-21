@@ -98,15 +98,6 @@ class UserTest < ActiveSupport::TestCase
     User.authenticate(@credentials).should be_false
   end
   
-  # User.superuser
-  test 'User.superusers returns all superusers' do
-    superuser = User.find_by_first_name('a superuser')
-    
-    result = User.superusers
-    result.should include(superuser)
-    result.size.should == 1
-  end
-  
   # User.admins_and_superusers
   test 'User.admins_and_superusers returns all site admins and superusers' do
     admin = User.find_by_first_name('an admin')
@@ -152,30 +143,8 @@ class UserTest < ActiveSupport::TestCase
     user.password_hash.should_not be_blank
     user.password_salt.should_not be_blank
   end
-
-  test 'makes the new user a superuser' do
-    user = User.create_superuser(@valid_user_params)
-    user.has_role?(:superuser).should be_true
-  end
-
-  # User.by_context_and_role
-  test "User.by_context_and_role finds all superusers" do
-    users = User.by_context_and_role(nil, :superuser)
-    users.size.should == 1
-  end
-
-  test "User.by_context_and_role finds all admins of a given site" do
-    site = Site.find_by_name('site with blog')
-    users = User.by_context_and_role(site, :admin)
-    users.size.should == 1
-  end
   
   # INSTANCE METHODS
-  
-  test '#attributes= calls update_roles if attributes have a :roles key' do
-    mock(@user).update_roles(anything)
-    @user.attributes= {:roles => 'roles'}
-  end
   
   test '#verify! sets the verified_at timestamp and saves the user' do
     @user.update_attributes :verified_at => nil
@@ -220,32 +189,5 @@ class UserTest < ActiveSupport::TestCase
 
   test "#email_with_name returns formatted string to use with email headers" do
     @user.email_with_name.should == "a user <a-user@example.com>"
-  end
-  
-  def role_attributes
-    { "0" => { "type" => "Rbac::Role::Superuser", "selected" => "1" },
-      "1" => { "type" => "Rbac::Role::Admin", "context_id" => Site.first.id, "context_type" => "Site", "selected" => "1" } }
-  end
-
-  test 'clears existing roles' do
-    mock(@user.roles).clear
-    @user.update_roles role_attributes
-  end
-
-  test 'creates new roles from the given attributes' do
-    @user.roles.should be_empty
-    
-    @user.update_roles role_attributes
-    @user.roles(true).size.should == 2
-  end
-
-  test 'ignores parameters that do not have the :selected flag set' do
-    @user.roles.should be_empty
-
-    attributes = role_attributes
-    attributes['0']['selected'] = '0'
-    @user.update_roles attributes
-    
-    @user.roles(true).size.should == 1
   end
 end

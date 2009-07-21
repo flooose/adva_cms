@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + "/../../test_helper")
 
-class RolesTest < ActiveSupport::TestCase
+class RoleTest < ActiveSupport::TestCase
   def setup
     super
     
@@ -29,11 +29,11 @@ class RolesTest < ActiveSupport::TestCase
   #end
 
   test "a user does not have the role :moderator" do
-    @user.has_role?(:moderator, :context => @section).should be_false
+    @user.has_role?(:moderator, @section).should be_false
   end
 
   test "a user does not have the role :admin" do
-    @user.has_role?(:admin, :context => @site).should be_false
+    @user.has_role?(:admin, @site).should be_false
   end
 
   test "a user does not have the role :superuser" do
@@ -46,15 +46,15 @@ class RolesTest < ActiveSupport::TestCase
   end
 
   test 'a content author has the role :author for that content' do
-    @author.has_role?(:author, :context => @content).should be_true
+    @author.has_role?(:author, @content).should be_true
   end
 
   test "a content author does not have the role :moderator" do
-    @author.has_role?(:moderator, :context => @section).should be_false
+    @author.has_role?(:moderator, @section).should be_false
   end
 
   test "a content author does not have the role :admin" do
-    @author.has_role?(:admin, :context => @site).should be_false
+    @author.has_role?(:admin, @site).should be_false
   end
 
   test "a content author does not have the role :superuser" do
@@ -67,15 +67,15 @@ class RolesTest < ActiveSupport::TestCase
   end
   
   test "a section moderator has the role :author for another user's content" do
-    @moderator.has_role?(:author, :context => @content).should be_true
+    @moderator.has_role?(:author, @content).should be_true
   end
   
   test "a section moderator has the role :moderator for that section" do
-    @moderator.has_role?(:moderator, :context => @section).should be_true
+    @moderator.has_role?(:moderator, @section).should be_true
   end
   
   test "a section moderator does not have the role :admin" do
-    @moderator.has_role?(:admin, :context => @site).should be_false
+    @moderator.has_role?(:admin, @site).should be_false
   end
   
   test "a section moderator does not have the role :superuser" do
@@ -88,23 +88,23 @@ class RolesTest < ActiveSupport::TestCase
   end
   
   test "a site admin has the role :author for another user's content" do
-    @admin.has_role?(:author, :context => @content).should be_true
+    @admin.has_role?(:author, @content).should be_true
   end
   
   test "a site admin has the role :moderator for sections belonging to that site" do
-    @admin.has_role?(:moderator, :context => @section).should be_true
+    @admin.has_role?(:moderator, @section).should be_true
   end
   
   test "a site admin has the role :admin for that site" do
-    @admin.has_role?(:admin, :context => @site).should be_true
+    @admin.has_role?(:admin, @site).should be_true
   end
   
   test "a site admin does not have role :admin for another site" do
-    @admin.has_role?(:admin, :context => @another_site).should be_false
+    @admin.has_role?(:admin, @another_site).should be_false
   end
   
   test "a site admin does not have role :admin for a non-existent site" do
-    lambda{ @admin.has_role?(:admin, nil) }.should raise_error
+    @admin.has_role?(:admin, nil).should be_false
   end
   
   test "a site admin does not have the role :superuser" do
@@ -117,15 +117,15 @@ class RolesTest < ActiveSupport::TestCase
   end
   
   test "a superuser has the role :author for another user's content" do
-    @superuser.has_role?(:author, :context => @content).should be_true
+    @superuser.has_role?(:author, @content).should be_true
   end
   
   test "a superuser has the role :moderator for sections belonging to that site" do
-    @superuser.has_role?(:moderator, :context => @section).should be_true
+    @superuser.has_role?(:moderator, @section).should be_true
   end
   
   test "a superuser has the role :site for that site" do
-    @superuser.has_role?(:admin, :context => @site).should be_true
+    @superuser.has_role?(:admin, @site).should be_true
   end
   
   test "a superuser has the role :superuser" do
