@@ -99,8 +99,10 @@ class Admin::CalendarEventsController < Admin::BaseController
     end
 
     def params_dates
-      set_calendar_event_param :start_date, Time.parse(params[:calendar_event][:start_date]) unless params[:calendar_event][:start_date].blank?
-      set_calendar_event_param :end_date, Time.parse(params[:calendar_event][:end_date]) unless params[:calendar_event][:end_date].blank?
+      unless params[:calendar_event].blank?
+        set_calendar_event_param :start_date, Time.parse(params[:calendar_event][:start_date]) unless params[:calendar_event][:start_date].blank?
+        set_calendar_event_param :end_date, Time.parse(params[:calendar_event][:end_date]) unless params[:calendar_event][:end_date].blank?
+      end
     end
 
     def save_draft?

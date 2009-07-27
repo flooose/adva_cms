@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../test_helper.rb')
 
 class Admin::CalendarEventsControllerTest < ActionController::TestCase
   tests Admin::CalendarEventsController
-  with_common :is_superuser, :access_granted, :fixed_time, :calendar_with_events
+  with_common :is_superuser, :fixed_time, :calendar_with_events
 
   def default_params
     { :site_id => @section.site_id, :section_id => @section.id }
@@ -43,87 +43,104 @@ class Admin::CalendarEventsControllerTest < ActionController::TestCase
       route.it_maps :delete, "events/1",      :action => 'destroy', :id => '1'
     end
   end
-
+  
   describe "GET to :index" do
     action { get :index, default_params }
-    it_renders_template :index
-    it_assigns :events => :not_nil
     it_guards_permissions :show, :calendar_event
+  
+    with :access_granted do
+      it_renders_template :index
+      it_assigns :events => :not_nil
+    end
   end
-
+  
   describe "GET to :new" do
     action { get :new, default_params }
     it_guards_permissions :create, :calendar_event
-
-    it_assigns :event => :not_nil
-    it_renders :template, :new
-
-    has_form_posting_to admin_calendar_events_path do
-      shows :form
+  
+    with :access_granted do
+      it_assigns :event => :not_nil
+      it_renders :template, :new
+  
+      has_form_posting_to admin_calendar_events_path do
+        shows :form
+      end
     end
   end
-
+  
   describe "GET to :edit" do
     action { get :edit, default_params.merge(:id => @section.events.first.id) }
-    it_assigns :event => lambda {@section.events.first}
-    it_renders_template :edit
     it_guards_permissions :update, :calendar_event
-    has_form_putting_to admin_calendar_event_path do
-      shows :form
+  
+    with :access_granted do
+      it_assigns :event => lambda {@section.events.first}
+      it_renders_template :edit
+  
+      has_form_putting_to admin_calendar_event_path do
+        shows :form
+      end
     end
   end
 
   describe "POST to :create" do
     action { post :create, default_params.merge(@params || {}) }
     it_guards_permissions :create, :calendar_event
-    it_assigns :event => :not_nil
 
-    with :invalid_event_params do
-      it_renders_template :new
-      it_assigns_flash_cookie :error => :not_nil
-      it_does_not_sweep_page_cache
-    end
-
-    with :valid_event_params do
-      it_saves :event
-      it_assigns_flash_cookie :notice => :not_nil
-      it_assigns_flash_cookie :error  => nil
-      it_redirects_to do
-        edit_admin_calendar_event_path(default_params.merge(:action => 'edit', :id => @section.events.last.id))
+    with :access_granted do
+      with :invalid_event_params do
+        it_renders_template :new
+        it_assigns_flash_cookie :error => :not_nil
+        it_does_not_sweep_page_cache
       end
-      it_sweeps_page_cache :by_reference => :section
+    
+      with :valid_event_params do
+        it_assigns :event => :not_nil
+    
+        it_saves :event
+        it_assigns_flash_cookie :notice => :not_nil
+        it_assigns_flash_cookie :error  => nil
+        it_redirects_to do
+          edit_admin_calendar_event_path(default_params.merge(:action => 'edit', :id => @section.events.last.id))
+        end
+        it_sweeps_page_cache :by_reference => :section
+      end
     end
   end
 
   describe "PUT to :update" do
     action { post :update, default_params.merge(@params || {}).merge(:id => @event.id) }
-    it_assigns :event
     it_guards_permissions :update, :calendar_event
-
-    with :invalid_event_params do
-      it_renders_template :edit
-      it_assigns_flash_cookie :error => :not_nil
-      it_does_not_trigger_any_event
-      it_does_not_sweep_page_cache
-    end
-
-    with :valid_event_params do
-      it_assigns_flash_cookie :notice => :not_nil
-      it_saves :event
-      it_redirects_to do
-        edit_admin_calendar_event_path(default_params.merge(:action => 'edit', :id => @event.id))
+  
+    with :access_granted do
+      with :invalid_event_params do
+        it_renders_template :edit
+        it_assigns_flash_cookie :error => :not_nil
+        it_does_not_trigger_any_event
+        it_does_not_sweep_page_cache
       end
-      it_sweeps_page_cache :by_reference => :event
+  
+      with :valid_event_params do
+        it_assigns :event
+  
+        it_assigns_flash_cookie :notice => :not_nil
+        it_saves :event
+        it_redirects_to do
+          edit_admin_calendar_event_path(default_params.merge(:action => 'edit', :id => @event.id))
+        end
+        it_sweeps_page_cache :by_reference => :event
+      end
     end
   end
 
   describe "DELETE to :destroy" do
     action { post :destroy, default_params.merge(:id => @event.id) }
-    it_assigns :event => lambda { @event }
     it_guards_permissions :destroy, :calendar_event
-
-    it_redirects_to { admin_calendar_events_path(@site, @section) }
-    it_assigns_flash_cookie :notice => :not_nil
-    it_sweeps_page_cache :by_reference => :event
+  
+    with :access_granted do
+      it_assigns :event => lambda { @event }
+      it_redirects_to { admin_calendar_events_path(@site, @section) }
+      it_assigns_flash_cookie :notice => :not_nil
+      it_sweeps_page_cache :by_reference => :event
+    end
   end
 end
