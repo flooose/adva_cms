@@ -67,7 +67,7 @@ class AdminAssetsControllerTest < ActionController::TestCase
     action { put :update, default_params.merge(@params).merge(:id => @asset.id) }
   
     with :valid_asset_params do
-      it_guards_permissions :update, :article
+      it_guards_permissions :update, :asset
       
       with :access_granted do
         it_assigns :site, :asset
