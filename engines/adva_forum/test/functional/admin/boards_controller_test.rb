@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../test_helper.rb')
 
-class BoardsControllerTest < ActionController::TestCase
+class Admin::BoardsControllerTest < ActionController::TestCase
   tests Admin::BoardsController
   
   with_common :is_superuser, :a_forum_with_boards
@@ -42,10 +42,11 @@ class BoardsControllerTest < ActionController::TestCase
   describe "GET to :index" do
     action { get :index, default_params  }
     
-    it_guards_permissions :show, :board
-    it_assigns :boards
-    it_renders_template :index
-    it_does_not_sweep_page_cache
+    it_guards_permissions :show, :board do
+      it_assigns :boards
+      it_renders_template :index
+      it_does_not_sweep_page_cache
+    end
     
     # FIXME add necessary view specs
   end
@@ -53,10 +54,11 @@ class BoardsControllerTest < ActionController::TestCase
   describe "GET to :new" do
     action { get :new, default_params }
     
-    it_guards_permissions :create, :board
-    it_assigns :board => Board
-    it_renders_template :new
-    it_does_not_sweep_page_cache
+    it_guards_permissions :create, :board do
+      it_assigns :board => Board
+      it_renders_template :new
+      it_does_not_sweep_page_cache
+    end
     
     # FIXME add view specs for form
   end
@@ -64,30 +66,33 @@ class BoardsControllerTest < ActionController::TestCase
   describe "POST to :create" do
     action { post :create, valid_form_params }
     
-    it_guards_permissions :create, :board
-    it_assigns :board => Board
-    it_redirects_to { admin_boards_path }
-    it_assigns_flash_cookie :notice => :not_nil
-    it_sweeps_page_cache :by_section => :section, :by_reference => :board
+    it_guards_permissions :create, :board do
+      it_assigns :board => Board
+      it_redirects_to { admin_boards_path }
+      it_assigns_flash_cookie :notice => :not_nil
+      it_sweeps_page_cache :by_section => :section, :by_reference => :board
+    end
   end
 
   describe "POST to :create, with invalid board params" do
     action { post :create, invalid_form_params }
     
-    it_guards_permissions :create, :board
-    it_assigns :board => Board
-    it_renders_template :new
-    it_assigns_flash_cookie :error => :not_nil
-    it_does_not_sweep_page_cache
+    it_guards_permissions :create, :board do
+      it_assigns :board => Board
+      it_renders_template :new
+      it_assigns_flash_cookie :error => :not_nil
+      it_does_not_sweep_page_cache
+    end
   end
   
   describe "GET to :edit" do
     action { get :edit, default_params.merge(:id => @board.id) }
     
-    it_guards_permissions :update, :board
-    it_assigns :board
-    it_renders_template :edit
-    it_does_not_sweep_page_cache
+    it_guards_permissions :update, :board do
+      it_assigns :board
+      it_renders_template :edit
+      it_does_not_sweep_page_cache
+    end
     
     # FIXME add view specs for form
   end
@@ -95,30 +100,33 @@ class BoardsControllerTest < ActionController::TestCase
   describe "PUT to :update" do
     action { put :update, valid_form_params.merge(:id => @board.id) }
     
-    it_guards_permissions :update, :board
-    it_assigns :board
-    it_redirects_to { admin_boards_path }
-    it_assigns_flash_cookie :notice => :not_nil
-    it_sweeps_page_cache :by_reference => :board
+    it_guards_permissions :update, :board do
+      it_assigns :board
+      it_redirects_to { admin_boards_path }
+      it_assigns_flash_cookie :notice => :not_nil
+      it_sweeps_page_cache :by_reference => :board
+    end
   end
 
   describe "PUT to :update, with invalid board params" do
     action { put :update, invalid_form_params.merge(:id => @board.id) }
     
-    it_guards_permissions :update, :board
-    it_assigns :board
-    it_renders_template :edit
-    it_assigns_flash_cookie :error => :not_nil
-    it_does_not_sweep_page_cache
+    it_guards_permissions :update, :board do
+      it_assigns :board
+      it_renders_template :edit
+      it_assigns_flash_cookie :error => :not_nil
+      it_does_not_sweep_page_cache
+    end
   end
   
   describe "DELETE to :destroy" do
     action { delete :destroy, default_params.merge(:id => @board.id) }
     
-    it_guards_permissions :destroy, :board
-    it_assigns :board
-    it_redirects_to { admin_boards_path }
-    it_assigns_flash_cookie :notice => :not_nil
-    it_sweeps_page_cache :by_reference => :board
+    it_guards_permissions :destroy, :board do
+      it_assigns :board
+      it_redirects_to { admin_boards_path }
+      it_assigns_flash_cookie :notice => :not_nil
+      it_sweeps_page_cache :by_reference => :board
+    end
   end
 end

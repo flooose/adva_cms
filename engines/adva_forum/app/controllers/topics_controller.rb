@@ -11,7 +11,7 @@ class TopicsController < BaseController
 
   guards_permissions :topic, :except => [:show, :index], :show => [:previous, :next]
   before_filter :guard_topic_permissions, :only => [:create, :update]
-  
+
   # FIXME do we even use index action?
   def index
   end
@@ -38,7 +38,7 @@ class TopicsController < BaseController
 
   def edit
   end
-  
+
   def update
     if @topic.update_attributes(params[:topic])
       trigger_events @topic
@@ -101,8 +101,8 @@ class TopicsController < BaseController
     end
 
     def guard_topic_permissions
-      unless has_permission? :moderate, :topic
-        params[:topic].reject!{|key, value| ['sticky', 'locked'].include? key } if params[:topic]
+      unless has_permission?(:moderate, :topic) or params[:topic].blank?
+        params[:topic].reject!{ |key, value| ['sticky', 'locked'].include?(key) }
       end
     end
 
