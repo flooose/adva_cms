@@ -10,7 +10,7 @@ class AdminWikipagesControllerTest < ActionController::TestCase
   def default_params
     { :site_id => @site.id, :section_id => @section.id }
   end
-  
+
   view :form do
     has_tag 'input[name=?]', 'wikipage[title]'
     has_tag 'textarea[name=?]', 'wikipage[body]'
@@ -22,7 +22,7 @@ class AdminWikipagesControllerTest < ActionController::TestCase
   test "is an Admin::BaseController" do
     @controller.should be_kind_of(Admin::BaseController)
   end
-
+  
   describe "routing" do
     with_options :path_prefix => '/admin/sites/1/sections/1/', :site_id => "1", :section_id => "1" do |r|
       r.it_maps :get,    "wikipages",        :action => 'index'
@@ -34,45 +34,39 @@ class AdminWikipagesControllerTest < ActionController::TestCase
       r.it_maps :delete, "wikipages/1",      :action => 'destroy', :id => '1'
     end
   end
-
+  
   describe "GET to :index" do
     action { get :index, default_params }
-    it_guards_permissions :show, :wikipage
-
-    with :access_granted do
+    it_guards_permissions :show, :wikipage do
       it_assigns :wikipages
       it_renders :template, :index do
         has_tag 'table[id=wikipages]'
       end
     end
   end
-
+  
   describe "GET to :new" do
     action { get :new, default_params }
-    it_guards_permissions :create, :wikipage
-  
-    with :access_granted do
+    it_guards_permissions :create, :wikipage do
       it_assigns :site, :section, :wikipage => :not_nil
       it_renders :template, :new do
         shows :form
       end
     end
   end
-
+  
   describe "POST to :create" do
     action { post :create, default_params.merge(@params || {}) }
-    it_guards_permissions :create, :wikipage
-
-    with :access_granted do
+    it_guards_permissions :create, :wikipage do
       it_assigns :wikipage => :not_nil
-
+  
       with :valid_wikipage_params do
         it_saves :wikipage
         it_redirects_to { edit_admin_wikipage_path(@site, @section, assigns(:wikipage)) }
         it_assigns_flash_cookie :notice => :not_nil
         it_triggers_event :wikipage_created
       end
-
+  
       with :invalid_wikipage_params do
         it_does_not_save :wikipage
         it_renders :template, :new
@@ -81,12 +75,10 @@ class AdminWikipagesControllerTest < ActionController::TestCase
       end
     end
   end
-
+  
   describe "GET to :edit" do
     action { get :edit, default_params.merge(:id => @wikipage.id) }
-    it_guards_permissions :update, :wikipage
-
-    with :access_granted do
+    it_guards_permissions :update, :wikipage do
       it_assigns :wikipage
       it_renders :template, :edit do
         shows :form
@@ -97,13 +89,11 @@ class AdminWikipagesControllerTest < ActionController::TestCase
   describe "PUT to :update" do
     action do
       Wikipage.with_observers :wikipage_sweeper do
-        put :update, default_params.merge(:id => @wikipage.id).merge(@params || {})
+        put :update, default_params.merge(:id => @wikipage.id).merge(@params || { :wikipage => {} })
       end
     end
 
-    it_guards_permissions :update, :wikipage
-
-    with :access_granted do
+    it_guards_permissions :update, :wikipage do
       with "no version param given" do
         with "valid wikipage params" do
           before { @params = { :wikipage => { :body => 'the updated wikipage body' } } }
@@ -128,27 +118,24 @@ class AdminWikipagesControllerTest < ActionController::TestCase
 
       with "a version param given" do
         before { @params = { :wikipage => { :version => '1' } } }
-        it_guards_permissions :update, :wikipage
 
-        with :access_granted do
-          with "the requested version exists (succeeds)" do
-            before { @wikipage.update_attributes(:body => "#{@wikipage.body} was changed") }
+        with "the requested version exists (succeeds)" do
+          before { @wikipage.update_attributes(:body => "#{@wikipage.body} was changed") }
 
-            it_rollsback :wikipage, :to => 1
-            it_triggers_event :wikipage_rolledback
-            it_assigns_flash_cookie :notice => :not_nil
-            it_redirects_to { edit_admin_wikipage_path(@site, @section, @wikipage) }
-            it_sweeps_page_cache :by_reference => :wikipage
-          end
+          it_rollsback :wikipage, :to => 1
+          it_triggers_event :wikipage_rolledback
+          it_assigns_flash_cookie :notice => :not_nil
+          it_redirects_to { edit_admin_wikipage_path(@site, @section, @wikipage) }
+          it_sweeps_page_cache :by_reference => :wikipage
+        end
 
-          with "the requested version does not exist (fails)" do
-            before { @params = { :wikipage => { :version => '10' } } }
-            it_does_not_rollback :wikipage
-            it_does_not_trigger_any_event
-            it_assigns_flash_cookie :error => :not_nil
-            it_redirects_to { edit_admin_wikipage_path(@site, @section, @wikipage) }
-            it_does_not_sweep_page_cache
-          end
+        with "the requested version does not exist (fails)" do
+          before { @params = { :wikipage => { :version => '10' } } }
+          it_does_not_rollback :wikipage
+          it_does_not_trigger_any_event
+          it_assigns_flash_cookie :error => :not_nil
+          it_redirects_to { edit_admin_wikipage_path(@site, @section, @wikipage) }
+          it_does_not_sweep_page_cache
         end
       end
     end
@@ -156,9 +143,8 @@ class AdminWikipagesControllerTest < ActionController::TestCase
 
   describe "DELETE to :destroy" do
     action { delete :destroy, default_params.update(:id => @wikipage.id) }
-    it_guards_permissions :destroy, :wikipage
-
-    with :access_granted do
+  
+    it_guards_permissions :destroy, :wikipage do
       it_redirects_to { admin_wikipages_path(@site, @section) }
       it_assigns_flash_cookie :notice => :not_nil
       it_triggers_event :wikipage_deleted

@@ -86,6 +86,7 @@ class Admin::UsersController < Admin::BaseController
       redirect_to admin_users_path(@site)
     end
 
+    # FIXME extract this and use Rbac contexts instead
     def authorize_access
       redirect_to admin_sites_path unless @site || current_user.has_role?(:superuser)
     end

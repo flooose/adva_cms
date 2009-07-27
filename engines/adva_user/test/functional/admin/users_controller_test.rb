@@ -35,91 +35,104 @@ class AdminUsersControllerTest < ActionController::TestCase
   describe "GET to :index, with a site" do
     action { get :index, default_params }
   
-    it_guards_permissions :show, :user
-    it_assigns :users
-    it_renders_template :index
+    it_guards_permissions :show, :user do
+      it_assigns :users
+      it_renders_template :index
+    end
   end
   
   describe "GET to :index, without a site" do
     action { get :index }
   
-    it_guards_permissions :show, :user
-    it_assigns :users
-    it_renders_template :index
+    # FIXME this currently authorizes access in a hardcoded fashion to only :superusers
+    # see Admin::UsersController#authorize_access
+    
+    # it_guards_permissions :show, :user do
+      it_assigns :users
+      it_renders_template :index
+    # end
   end
 
   describe "GET to :show" do
     action { get :show, user_params }
     
-    it_guards_permissions :show, :user
-    it_assigns :user
-    it_renders_template :show
+    it_guards_permissions :show, :user do
+      it_assigns :user
+      it_renders_template :show
+    end
   end
 
   describe "GET to :new" do
     action { get :new, default_params }
     
-    it_assigns :user => User
-    it_renders_template :new
-    it_guards_permissions :create, :user
+    it_guards_permissions :create, :user do
+      it_assigns :user => User
+      it_renders_template :new
+    end
   end
 
   describe "POST to :create" do
     action { post :create, valid_user_params }
 
-    it_assigns :user => User
-    it_guards_permissions :create, :user
-    it_triggers_event :user_created
-    it_assigns_flash_cookie :notice => :not_nil
-    it_redirects_to { admin_site_user_path(@site, User.last) }
+    it_guards_permissions :create, :user do
+      it_assigns :user => User
+      it_triggers_event :user_created
+      it_assigns_flash_cookie :notice => :not_nil
+      it_redirects_to { admin_site_user_path(@site, User.last) }
+    end
   end
   
   describe "POST to :create, with invalid params" do
     action { post :create, invalid_user_params }
   
-    it_assigns :user => User
-    it_guards_permissions :create, :user
-    it_does_not_trigger_any_event
-    it_assigns_flash_cookie :error => :not_nil
-    it_renders_template 'new'
+    it_guards_permissions :create, :user do
+      it_assigns :user => User
+      it_does_not_trigger_any_event
+      it_assigns_flash_cookie :error => :not_nil
+      it_renders_template 'new'
+    end
   end
 
   describe "GET to :edit" do
     action { get :edit, user_params }
     
-    it_assigns :user
-    it_renders_template :edit
-    it_guards_permissions :update, :user
+    it_guards_permissions :update, :user do
+      it_assigns :user
+      it_renders_template :edit
+    end
   end
 
   describe "PUT to :update" do
     action { put :update, valid_user_params.merge(:id => @user.id) }
     
-    it_assigns :user
-    it_guards_permissions :update, :user
-    it_triggers_event :user_updated
-    it_assigns_flash_cookie :notice => :not_nil
-    it_redirects_to { admin_site_user_path(@site, @user) }
+    it_guards_permissions :update, :user do
+      it_assigns :user
+      it_triggers_event :user_updated
+      it_assigns_flash_cookie :notice => :not_nil
+      it_redirects_to { admin_site_user_path(@site, @user) }
+    end
   end
   
   describe "PUT to :update, with invalid params" do
     action { put :update, invalid_user_params.merge(:id => @user.id) }
     
-    it_assigns :user
-    it_guards_permissions :update, :user
-    it_does_not_trigger_any_event
-    it_assigns_flash_cookie :error => :not_nil
-    it_renders_template 'edit'
+    it_guards_permissions :update, :user do
+      it_assigns :user
+      it_does_not_trigger_any_event
+      it_assigns_flash_cookie :error => :not_nil
+      it_renders_template 'edit'
+    end
   end
 
   describe "DELETE to :destroy" do
     action { delete :destroy, user_params }
     
-    it_assigns :user
-    it_guards_permissions :destroy, :user
-    it_assigns_flash_cookie :notice => :not_nil
-    it_triggers_event :user_deleted
-    it_redirects_to { admin_site_users_path(@site) }
+    it_guards_permissions :destroy, :user do
+      it_assigns :user
+      it_assigns_flash_cookie :notice => :not_nil
+      it_triggers_event :user_deleted
+      it_redirects_to { admin_site_users_path(@site) }
+    end
   end
   
 # FIXME implement tests for membership removing and RBAC system (integration or functional tests?)
