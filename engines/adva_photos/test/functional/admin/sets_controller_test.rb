@@ -50,10 +50,11 @@ class SetsControllerTest < ActionController::TestCase
   describe "GET to new" do
     action { get :new, default_params }
     
-    it_guards_permissions :create, :category
-    it_assigns :set => Category
-    it_renders_template :new
-    it_does_not_sweep_page_cache
+    it_guards_permissions :create, :category do
+      it_assigns :set => Category
+      it_renders_template :new
+      it_does_not_sweep_page_cache
+    end
     
     # FIXME add view specs for form
   end
@@ -61,31 +62,34 @@ class SetsControllerTest < ActionController::TestCase
   describe "POST to create" do
     action { post :create, valid_form_params }
     
-    it_guards_permissions :create, :category
-    it_assigns :set
-    it_redirects_to { admin_sets_path(@site, @album) }
-    it_assigns_flash_cookie :notice => :not_nil
-    it_sweeps_page_cache :by_section => :section
+    it_guards_permissions :create, :category do
+      it_assigns :set
+      it_redirects_to { admin_sets_path(@site, @album) }
+      it_assigns_flash_cookie :notice => :not_nil
+      it_sweeps_page_cache :by_section => :section
+    end
   end
      
   describe "POST to create, with invalid set params" do
     action { post :create, invalid_form_params }
     
-    it_guards_permissions :create, :category
-    it_assigns :set
-    it_renders_template :new
-    it_assigns_flash_cookie :error => :not_nil
-    it_does_not_sweep_page_cache
+    it_guards_permissions :create, :category do
+      it_assigns :set
+      it_renders_template :new
+      it_assigns_flash_cookie :error => :not_nil
+      it_does_not_sweep_page_cache
+    end
   end
   
   describe "GET to edit" do
     with :a_set do
       action { get :edit, default_params.merge(:id => @set.id) }
     
-      it_guards_permissions :update, :category
-      it_assigns :set
-      it_renders_template :edit
-      it_does_not_sweep_page_cache
+      it_guards_permissions :update, :category do
+        it_assigns :set
+        it_renders_template :edit
+        it_does_not_sweep_page_cache
+      end
       
       # FIXME add view specs for form
     end
@@ -95,11 +99,12 @@ class SetsControllerTest < ActionController::TestCase
     with :a_set do
       action { put :update, valid_form_params.merge(:id => @set.id) }
     
-      it_guards_permissions :update, :category
-      it_assigns :set
-      it_redirects_to { admin_sets_path(@site, @album) }
-      it_assigns_flash_cookie :notice => :not_nil
-      it_sweeps_page_cache :by_section => :section
+      it_guards_permissions :update, :category do
+        it_assigns :set
+        it_redirects_to { admin_sets_path(@site, @album) }
+        it_assigns_flash_cookie :notice => :not_nil
+        it_sweeps_page_cache :by_section => :section
+      end
     end
   end
   
@@ -107,11 +112,12 @@ class SetsControllerTest < ActionController::TestCase
     with :a_set do
       action { put :update, invalid_form_params.merge(:id => @set.id) }
     
-      it_guards_permissions :update, :category
-      it_assigns :set
-      it_renders_template :edit
-      it_assigns_flash_cookie :error => :not_nil
-      it_does_not_sweep_page_cache
+      it_guards_permissions :update, :category do
+        it_assigns :set
+        it_renders_template :edit
+        it_assigns_flash_cookie :error => :not_nil
+        it_does_not_sweep_page_cache
+      end
     end
   end
   
@@ -119,11 +125,12 @@ class SetsControllerTest < ActionController::TestCase
     with :a_set do
       action { delete :destroy, default_params.merge(:id => @set.id) }
     
-      it_guards_permissions :destroy, :category
-      it_assigns :set
-      it_redirects_to { admin_sets_path(@site, @album) }
-      it_assigns_flash_cookie :notice => :not_nil
-      it_sweeps_page_cache :by_section => :section
+      it_guards_permissions :destroy, :category do
+        it_assigns :set
+        it_redirects_to { admin_sets_path(@site, @album) }
+        it_assigns_flash_cookie :notice => :not_nil
+        it_sweeps_page_cache :by_section => :section
+      end
     end
   end
 end
